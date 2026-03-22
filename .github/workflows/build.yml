@@ -6,6 +6,10 @@ on:
           description: "Package name of the game:"
           required: true
 
+# Thêm dòng này để ép hệ thống dùng Node 24 mới nhất, xóa cảnh báo
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,13 +19,13 @@ jobs:
     - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17' # Nâng lên bản 17 để tương thích tốt hơn với Gradle mới
+        java-version: '17' 
         cache: 'gradle'
         
     - name: Build Module
       run: |
         chmod +x ./gradlew
-        # Sửa nội dung file cấu hình theo package_name bạn nhập
+        # Tự động điền package name của DLS vào code
         sed -i 's/moduleDescription = "/moduleDescription = "(${{ github.event.inputs.package_name }}) /g' module.gradle
         sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
         ./gradlew :module:assembleRelease
